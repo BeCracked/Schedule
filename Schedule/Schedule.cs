@@ -101,6 +101,11 @@ namespace Schedule
             return IsTimeFrameFree(start, start.Add(duration));
         }
 
+        /// <summary>
+        ///     Get the scheduled item at the given <paramref name="moment"></paramref>.
+        /// </summary>
+        /// <param name="moment"></param>
+        /// <returns>The <see cref="T" /> that is scheduled at the given <paramref name="moment" />. Null if there is none.</returns>
         [CanBeNull]
         public T GetScheduled(DateTime moment)
         {
