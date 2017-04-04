@@ -1,5 +1,6 @@
 ﻿using Schedule;
 using System;
+using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ScheduleTests;
 
@@ -136,6 +137,24 @@ namespace Schedule.Tests
             // add earlier
             ScheduableType s3 = new ScheduableType(DateTime.Now.AddHours(-2), DateTime.Now.AddHours(-1));
             schedule.Add(s3);
+            Assert.IsTrue(schedule[0] == s3 && schedule[1] == s1 && schedule[2] == s2);
+        }
+
+        [TestMethod]
+        public void AddRangeTest()
+        {
+            Schedule<ScheduableType> schedule = new Schedule<ScheduableType>();
+            //Earliest
+            ScheduableType s3 = new ScheduableType(DateTime.Now.AddHours(-2), DateTime.Now.AddHours(-1));
+            //Earlier
+            ScheduableType s1 = new ScheduableType(DateTime.Now, DateTime.Now.AddHours(1));
+            //Later
+            ScheduableType s2 = new ScheduableType(DateTime.Now.AddHours(1), DateTime.Now.AddHours(2));
+
+            IEnumerable<ScheduableType> collection = new List<ScheduableType> {s1, s2, s3};
+
+            schedule.AddRange(collection);
+
             Assert.IsTrue(schedule[0] == s3 && schedule[1] == s1 && schedule[2] == s2);
         }
     }

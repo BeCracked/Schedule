@@ -51,6 +51,21 @@ namespace Schedule
             Sort(StartComparison);
         }
 
+        public new void AddRange(IEnumerable<T> collection)
+        {
+            if (collection == null) throw new ArgumentNullException(nameof(collection));
+            foreach (T o in collection)
+                try
+                {
+                    Add(o);
+                }
+                catch (ScheduleConflictException e)
+                {
+                    Console.WriteLine(e);
+                    throw new ScheduleConflictException("An item in the collection conflicted with the schedule.", e);
+                }
+        }
+
         /// <summary>
         ///     Checks if nothing is scheduled at a given DateTime.
         /// </summary>
