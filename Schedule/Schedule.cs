@@ -40,8 +40,15 @@ namespace Schedule
         /// <param name="item">The item to be added.</param>
         public new void Add(T item)
         {
-            Sort(StartComparison);
+            // Catch null
+            if (item == null) throw new ArgumentNullException(nameof(item));
+
+            // Check if item does not conflict with this schedule
+            if (!IsTimeFrameFree(item.Start, item.End))
+                throw new ScheduleConflictException(nameof(item));
+
             base.Add(item);
+            Sort(StartComparison);
         }
 
         /// <summary>
@@ -97,7 +104,7 @@ namespace Schedule
         [CanBeNull]
         public T GetScheduled(DateTime moment)
         {
-            return this.Find(x => x.Start <= moment && x.End >= moment);
+            return Find(x => x.Start <= moment && x.End >= moment);
         }
     }
 
