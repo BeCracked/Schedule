@@ -1,5 +1,4 @@
-﻿using Schedule;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ScheduleTests;
@@ -156,6 +155,28 @@ namespace Schedule.Tests
             schedule.AddRange(collection);
 
             Assert.IsTrue(schedule[0] == s3 && schedule[1] == s1 && schedule[2] == s2);
+        }
+
+        [TestMethod]
+        public void GetScheduledTest()
+        {
+            Schedule<ScheduableType> schedule = new Schedule<ScheduableType>();
+
+            //Earlier
+            ScheduableType s1 = new ScheduableType(DateTime.Now, DateTime.Now.AddHours(1));
+            //Later
+            ScheduableType s2 = new ScheduableType(DateTime.Now.AddHours(1), DateTime.Now.AddHours(2));
+
+            schedule.AddRange(new List<ScheduableType> {s1, s2});
+
+            Assert.AreSame(schedule.GetScheduled(DateTime.Now), s1);
+            Assert.AreSame(schedule.GetScheduled(DateTime.Now.AddHours(0.5)), s1);
+
+            Assert.AreSame(schedule.GetScheduled(DateTime.Now.AddHours(1)), s2);
+            Assert.AreSame(schedule.GetScheduled(DateTime.Now.AddHours(1.5)), s2);
+
+            Assert.AreSame(schedule.GetScheduled(DateTime.Now.AddHours(5)), null);
+            Assert.AreSame(schedule.GetScheduled(DateTime.Now.AddHours(-5)), null);
         }
     }
 }
