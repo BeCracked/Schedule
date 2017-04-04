@@ -69,5 +69,32 @@ namespace Schedule.Tests
 
             #endregion
         }
+
+        [TestMethod]
+        public void IsTimeFrameFreeTest()
+        {
+            Schedule<ScheduableType> schedule = new Schedule<ScheduableType>();
+
+            //negative TimeFrame
+            try
+            {
+                schedule.IsTimeFrameFree(DateTime.Now.AddHours(1), DateTime.Now);
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+            }
+
+
+            // Empty Schedule
+            Assert.IsTrue(schedule.IsTimeFrameFree(DateTime.Now, DateTime.Now.AddHours(1)));
+
+
+            /*
+                        //Earlier
+                        ScheduableType s1 = new ScheduableType(DateTime.Now, DateTime.Now.AddHours(1));
+                        //Later
+                        ScheduableType s2 = new ScheduableType(DateTime.Now.AddHours(1), DateTime.Now.AddHours(2));
+                        */
+        }
     }
 }

@@ -49,6 +49,7 @@ namespace Schedule
         /// <returns>True if nothing is scheduled at the given <paramref name="moment" />.</returns>
         public bool IsMomentFree(DateTime moment)
         {
+            if (moment == null) throw new ArgumentNullException(nameof(moment));
             return !Exists(x => x.Start < moment && x.End > moment);
         }
 
@@ -60,8 +61,17 @@ namespace Schedule
         /// <returns>True if timeframe is free, false else.</returns>
         public bool IsTimeFrameFree(DateTime start, DateTime end)
         {
-            //ToDo implement
-            throw new NotImplementedException();
+            // Catch nulls
+            if (start == null) throw new ArgumentNullException(nameof(start));
+            if (end == null) throw new ArgumentNullException(nameof(end));
+            // Catch negative timeframe
+            if (start > end) throw new ArgumentOutOfRangeException(nameof(end), "TimeFrame must not be negative!");
+
+            /*
+            // Start and end moments have to be free
+            if (!(IsMomentFree(start) && IsMomentFree(end))) return false;
+            */
+            return !Exists(x => x.Start >= start && x.End <= end);
         }
 
         /// <summary>
@@ -72,8 +82,14 @@ namespace Schedule
         /// <returns>True if timeframe is free, false else.</returns>
         public bool IsTimeFrameFree(DateTime start, TimeSpan duration)
         {
-            //ToDo implement
-            throw new NotImplementedException();
+            // Catch nulls
+            if (start == null) throw new ArgumentNullException(nameof(start));
+            if (duration == null) throw new ArgumentNullException(nameof(duration));
+            // Catch negative timeframe
+            if (duration.Ticks < 0)
+                throw new ArgumentOutOfRangeException(nameof(duration), "TimeFrame must not be negative!");
+
+            return IsTimeFrameFree(start, start.Add(duration));
         }
     }
 }
