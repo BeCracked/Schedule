@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
+using JetBrains.Annotations;
 
 namespace Schedule
 {
@@ -90,6 +92,34 @@ namespace Schedule
                 throw new ArgumentOutOfRangeException(nameof(duration), "TimeFrame must not be negative!");
 
             return IsTimeFrameFree(start, start.Add(duration));
+        }
+
+        [CanBeNull]
+        public T GetScheduled(DateTime moment)
+        {
+            return this.Find(x => x.Start <= moment && x.End >= moment);
+        }
+    }
+
+    [Serializable]
+    public class ScheduleConflictException : Exception
+    {
+        public ScheduleConflictException()
+        {
+        }
+
+        public ScheduleConflictException(string message) : base(message)
+        {
+        }
+
+        public ScheduleConflictException(string message, Exception inner) : base(message, inner)
+        {
+        }
+
+        protected ScheduleConflictException(
+            SerializationInfo info,
+            StreamingContext context) : base(info, context)
+        {
         }
     }
 }
