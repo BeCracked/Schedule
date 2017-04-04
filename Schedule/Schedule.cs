@@ -126,6 +126,28 @@ namespace Schedule
         {
             return Find(x => x.Start <= moment && x.End >= moment);
         }
+
+        #region Obsolete
+
+        [Obsolete]
+        public new void Insert(int index, T item)
+        {
+            throw new NotSupportedException();
+        }
+
+        [Obsolete]
+        public void Insert(T item)
+        {
+            throw new NotSupportedException();
+        }
+
+        [Obsolete]
+        public new void InsertRange(int index, IEnumerable<T> collection)
+        {
+            throw new NotSupportedException();
+        }
+
+        #endregion
     }
 
     [Serializable]
