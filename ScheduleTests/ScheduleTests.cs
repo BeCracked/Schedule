@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Schedule;
+using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ScheduleTests;
 
@@ -95,6 +96,47 @@ namespace Schedule.Tests
                         //Later
                         ScheduableType s2 = new ScheduableType(DateTime.Now.AddHours(1), DateTime.Now.AddHours(2));
                         */
+        }
+
+        [TestMethod]
+        public void AddTest()
+        {
+            Schedule<ScheduableType> schedule = new Schedule<ScheduableType>();
+            //Earlier
+            ScheduableType s1 = new ScheduableType(DateTime.Now, DateTime.Now.AddHours(1));
+            //Later
+            ScheduableType s2 = new ScheduableType(DateTime.Now.AddHours(1), DateTime.Now.AddHours(2));
+
+            // null
+            try
+            {
+                schedule.Add(null);
+            }
+            catch (ArgumentNullException)
+            {
+            }
+
+            // empty Schedule
+            schedule.Add(s1);
+            Assert.IsTrue(schedule[0] == s1);
+
+            // ScheduleConflictException / same start
+            try
+            {
+                schedule.Add(s1);
+            }
+            catch (ScheduleConflictException)
+            {
+            }
+
+            // add later
+            schedule.Add(s2);
+            Assert.IsTrue(schedule[0] == s1 && schedule[1] == s2);
+
+            // add earlier
+            ScheduableType s3 = new ScheduableType(DateTime.Now.AddHours(-2), DateTime.Now.AddHours(-1));
+            schedule.Add(s3);
+            Assert.IsTrue(schedule[0] == s3 && schedule[1] == s1 && schedule[2] == s2);
         }
     }
 }
