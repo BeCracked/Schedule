@@ -58,4 +58,7 @@
     </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>$(SolutionDir)CompileDocu.bat $(SolutionDir)$(SolutionName).shfbproj $(ConfigurationName)</PostBuildEvent>
+  </PropertyGroup>
 </Project>

@@ -7,11 +7,16 @@ using JetBrains.Annotations;
 namespace Schedule
 {
     /// <summary>
-    ///     An always sorted (ealier to later) list of scheduleable objects.
+    ///     An always sorted (earlier to later) list of scheduleable objects.
     /// </summary>
     /// <typeparam name="T">has to implement <see cref="IScheduleable" />.</typeparam>
     public class Schedule<T> : List<T> where T : IScheduleable
     {
+        //ToDo refactor this to a function since it may throw an exception.
+        /// <summary>
+        ///     The <see cref="IScheduleable.End">End</see> of the last <see cref="IScheduleable" />.
+        /// </summary>
+        /// <exception cref="NullReferenceException">Thrown when no <see cref="IScheduleable" /> is scheduled.</exception>
         public DateTime End
         {
             get
@@ -23,17 +28,19 @@ namespace Schedule
         }
 
         /// <summary>
-        ///     Compares the <see cref="IScheduleable.Start" /> of two <see cref="T" /> to see which starts earlier.
+        ///     Compares the <see cref="IScheduleable.Start" /> of two <see cref="IScheduleable" /> to see which starts earlier.
         /// </summary>
-        /// <param name="s1">First <see cref="T" /></param>
-        /// <param name="s2">Second <see cref="T" /></param>
+        /// <param name="s1">The first <see cref="IScheduleable" />.</param>
+        /// <param name="s2">The second <see cref="IScheduleable" />.</param>
         /// <returns>
-        ///     -1 if
-        ///     <param name="s1"> is earlier.</param>
-        ///     0 if equal
-        ///     1 if
-        ///     <param name="s2"> is earlier.</param>
+        ///     <para>-1 if <paramref name="s1" /> is earlier.</para>
+        ///     <para>0 if equal.</para>
+        ///     1 if <paramref name="s2" /> is earlier.
         /// </returns>
+        /// <exception cref="ArgumentNullException">
+        ///     Thrown when any <paramref name="s1" />, <paramref name="s2" /> or their
+        ///     <see cref="IScheduleable.Start">Start</see> is null.
+        /// </exception>
         public static int StartComparison(T s1, T s2)
         {
             if (s1?.Start == null) throw new ArgumentNullException(nameof(s1.Start));
@@ -46,9 +53,13 @@ namespace Schedule
         }
 
         /// <summary>
-        ///     Checks if an item can be added to this Schedule. Throws Exception if otherwise.
+        ///     Checks if an item can be added to this <see cref="Schedule{T}" />. Throws Exception if otherwise.
         /// </summary>
         /// <param name="item">The item to be added.</param>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="item" /> is null.</exception>
+        /// <exception cref="ScheduleConflictException">
+        ///     Thrown when <paramref name="item" /> conflicts with an item in this <see cref="Schedule{T}" />.
+        /// </exception>
         public new void Add(T item)
         {
             // Catch null
@@ -62,6 +73,15 @@ namespace Schedule
             Sort(StartComparison);
         }
 
+        /// <summary>
+        ///     Tries to add <paramref name="collection" /> to the
+        /// </summary>
+        /// <param name="collection">The collection to be added to this <see cref="Schedule{T}" />.</param>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="collection" /> is null.</exception>
+        /// <exception cref="ScheduleConflictException">
+        ///     Thrown when an item in this schedule is conflicting with
+        ///     <paramref name="collection" />.
+        /// </exception>
         public new void AddRange(IEnumerable<T> collection)
         {
             if (collection == null) throw new ArgumentNullException(nameof(collection));
@@ -89,17 +109,19 @@ namespace Schedule
         }
 
         /// <summary>
-        ///     Checks if a timeframe is free of scheduled items.
+        ///     Checks if a time frame is free of scheduled items.
         /// </summary>
-        /// <param name="start">Start of the timeframe.</param>
-        /// <param name="end">End of the timeframe.</param>
-        /// <returns>True if timeframe is free, false else.</returns>
+        /// <param name="start">Start of the time frame.</param>
+        /// <param name="end">End of the time frame.</param>
+        /// <returns>True if time frame is free, false else.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="start" /> or <paramref name="end" /> are null.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the time frame is negative.</exception>
         public bool IsTimeFrameFree(DateTime start, DateTime end)
         {
             // Catch nulls
             if (start == null) throw new ArgumentNullException(nameof(start));
             if (end == null) throw new ArgumentNullException(nameof(end));
-            // Catch negative timeframe
+            // Catch negative time frame
             if (start > end) throw new ArgumentOutOfRangeException(nameof(end), "TimeFrame must not be negative!");
 
             /*
@@ -110,17 +132,17 @@ namespace Schedule
         }
 
         /// <summary>
-        ///     Checks if a timeframe is free of scheduled items.
+        ///     Checks if a time frame is free of scheduled items.
         /// </summary>
-        /// <param name="start">Start of the timeframe.</param>
-        /// <param name="duration">Duration of the timeframe.</param>
-        /// <returns>True if timeframe is free, false else.</returns>
+        /// <param name="start">Start of the time frame.</param>
+        /// <param name="duration">Duration of the time frame.</param>
+        /// <returns>True if time frame is free, false else.</returns>
         public bool IsTimeFrameFree(DateTime start, TimeSpan duration)
         {
             // Catch nulls
             if (start == null) throw new ArgumentNullException(nameof(start));
             if (duration == null) throw new ArgumentNullException(nameof(duration));
-            // Catch negative timeframe
+            // Catch negative time frame
             if (duration.Ticks < 0)
                 throw new ArgumentOutOfRangeException(nameof(duration), "TimeFrame must not be negative!");
 
@@ -131,7 +153,10 @@ namespace Schedule
         ///     Get the scheduled item at the given <paramref name="moment"></paramref>.
         /// </summary>
         /// <param name="moment"></param>
-        /// <returns>The <see cref="T" /> that is scheduled at the given <paramref name="moment" />. Null if there is none.</returns>
+        /// <returns>
+        ///     The <see cref="IScheduleable" /> that is scheduled at the given <paramref name="moment" />. Null if there is
+        ///     none.
+        /// </returns>
         [CanBeNull]
         public T GetScheduled(DateTime moment)
         {
@@ -140,41 +165,79 @@ namespace Schedule
 
         #region Obsolete
 
+        /// <summary>
+        ///     Not supported!
+        /// </summary>
+        /// <param name="index"></param>
+        /// <param name="item"></param>
+        /// <exception cref="NotSupportedException"></exception>
         [Obsolete]
         public new void Insert(int index, T item)
         {
             throw new NotSupportedException();
         }
 
+        /// <summary>
+        ///     Not supported!
+        /// </summary>
+        /// <param name="item"></param>
+        /// <exception cref="NotSupportedException"></exception>
         [Obsolete]
         public void Insert(T item)
         {
             throw new NotSupportedException();
         }
 
+        /// <summary>
+        ///     Not supported!
+        /// </summary>
+        /// <param name="index"></param>
+        /// <param name="collection"></param>
+        /// <exception cref="NotSupportedException"></exception>
         [Obsolete]
         public new void InsertRange(int index, IEnumerable<T> collection)
         {
             throw new NotSupportedException();
         }
+
         #endregion
     }
 
+    /// <summary>
+    ///     This exception class is thrown if a unhandled schedule conflict occurred.
+    /// </summary>
     [Serializable]
     public class ScheduleConflictException : Exception
     {
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="ScheduleConflictException"/> class.
+        /// </summary>
         public ScheduleConflictException()
         {
         }
 
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="ScheduleConflictException"/> class.
+        /// </summary>
+        /// <param name="message"></param>
         public ScheduleConflictException(string message) : base(message)
         {
         }
 
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="ScheduleConflictException"/> class.
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="inner"></param>
         public ScheduleConflictException(string message, Exception inner) : base(message, inner)
         {
         }
 
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="ScheduleConflictException"/> class.
+        /// </summary>
+        /// <param name="info"></param>
+        /// <param name="context"></param>
         protected ScheduleConflictException(
             SerializationInfo info,
             StreamingContext context) : base(info, context)
