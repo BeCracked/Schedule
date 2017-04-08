@@ -40,6 +40,10 @@
       <DocumentationSource sourceFile="Schedule.sln" />
     </DocumentationSources>
     <PlugInConfigurations />
+    <NamespaceSummaries>
+      <NamespaceSummaryItem name="(global)" isDocumented="False" xmlns="" />
+<NamespaceSummaryItem name="Schedule" isDocumented="True" xmlns="">The main Namespace</NamespaceSummaryItem></NamespaceSummaries>
+    <VisibleItems>InheritedMembers, Protected, ProtectedInternalAsProtected</VisibleItems>
   </PropertyGroup>
   <!-- There are no properties for these groups.  AnyCPU needs to appear in order for Visual Studio to perform
 			 the build.  The others are optional common platform types that may appear. -->
