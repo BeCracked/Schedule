@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.Serialization;
 using JetBrains.Annotations;
 
@@ -11,6 +12,16 @@ namespace Schedule
     /// <typeparam name="T">has to implement <see cref="IScheduleable" />.</typeparam>
     public class Schedule<T> : List<T> where T : IScheduleable
     {
+        public DateTime End
+        {
+            get
+            {
+                T lastOrDefault = this.LastOrDefault();
+                if (lastOrDefault != null) return lastOrDefault.End;
+                throw new NullReferenceException();
+            }
+        }
+
         /// <summary>
         ///     Compares the <see cref="IScheduleable.Start" /> of two <see cref="T" /> to see which starts earlier.
         /// </summary>
@@ -146,7 +157,6 @@ namespace Schedule
         {
             throw new NotSupportedException();
         }
-
         #endregion
     }
 
