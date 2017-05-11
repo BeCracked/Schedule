@@ -23,7 +23,7 @@ namespace Schedule
             {
                 T lastOrDefault = this.LastOrDefault();
                 if (lastOrDefault != null) return lastOrDefault.End;
-                throw new NullReferenceException();
+                throw new NullReferenceException("Nothing is scheduled.");
             }
         }
 
