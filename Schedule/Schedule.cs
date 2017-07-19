@@ -12,14 +12,12 @@ namespace Schedule
     /// <typeparam name="T">has to implement <see cref="IScheduleable" />.</typeparam>
     public class Schedule<T> : List<T> where T : IScheduleable
     {
-        //ToDo refactor this to a function since it may throw an exception.
         /// <summary>
         ///     The <see cref="IScheduleable.End">End</see> of the last <see cref="IScheduleable" />.
         /// </summary>
         /// <exception cref="NullReferenceException">Thrown when no <see cref="IScheduleable" /> is scheduled.</exception>
-        public DateTime End
+        public DateTime GetEnd()
         {
-            get
             {
                 T lastOrDefault = this.LastOrDefault();
                 if (lastOrDefault != null) return lastOrDefault.End;
@@ -210,14 +208,14 @@ namespace Schedule
     public class ScheduleConflictException : Exception
     {
         /// <summary>
-        ///     Initializes a new instance of the <see cref="ScheduleConflictException"/> class.
+        ///     Initializes a new instance of the <see cref="ScheduleConflictException" /> class.
         /// </summary>
         public ScheduleConflictException()
         {
         }
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="ScheduleConflictException"/> class.
+        ///     Initializes a new instance of the <see cref="ScheduleConflictException" /> class.
         /// </summary>
         /// <param name="message"></param>
         public ScheduleConflictException(string message) : base(message)
@@ -225,7 +223,7 @@ namespace Schedule
         }
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="ScheduleConflictException"/> class.
+        ///     Initializes a new instance of the <see cref="ScheduleConflictException" /> class.
         /// </summary>
         /// <param name="message"></param>
         /// <param name="inner"></param>
@@ -234,7 +232,7 @@ namespace Schedule
         }
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="ScheduleConflictException"/> class.
+        ///     Initializes a new instance of the <see cref="ScheduleConflictException" /> class.
         /// </summary>
         /// <param name="info"></param>
         /// <param name="context"></param>
